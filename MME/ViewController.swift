@@ -16,6 +16,14 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         let memeObject = self.generateMemedImage()
         let activity = UIActivityViewController(activityItems:[memeObject], applicationActivities: nil)
         self.presentViewController(activity , animated: true, completion: nil)
+        activity.completionWithItemsHandler = complitionHandler
+        
+    }
+    func complitionHandler(activity: String?, success: Bool,items: [AnyObject]?, error: NSError?) {
+            print("complitionHandler result: " + String(success))
+        if success {
+            save()
+        }
     }
     
     let memeTextAttributes = [
@@ -109,11 +117,14 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     }
     
     func keyboardWillShow(notification: NSNotification) {
-        self.view.frame.origin.y -= getKeyboardHeight(notification)
+        
+        if (bottomText.isFirstResponder()){
+            self.view.frame.origin.y -= getKeyboardHeight(notification)
+        }
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y += getKeyboardHeight(notification)
+        self.view.frame.origin.y = 0
     }
     
     func getKeyboardHeight(notification: NSNotification) -> CGFloat {
@@ -155,10 +166,12 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         var gImage: UIImage
         gImage = self.generateMemedImage()
         
-        let meme = Meme(tText: topText.text!, bText: bottomText.text!, oImage: imagePicker.image!, mImage: gImage)
+        let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originImage: imagePicker.image!, memeImage: gImage)
         
         // Add it to the memes array in the Application Delegate
         (UIApplication.sharedApplication().delegate as!
             AppDelegate).memes.append(meme)
+        print("memes: " + String((UIApplication.sharedApplication().delegate as!AppDelegate).memes))
+            
     }
 }
