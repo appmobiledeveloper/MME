@@ -13,9 +13,9 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     
     @IBAction func onShareButton(sender: AnyObject) {
         
-        let memeObject = self.generateMemedImage()
+        let memeObject = generateMemedImage()
         let activity = UIActivityViewController(activityItems:[memeObject], applicationActivities: nil)
-        self.presentViewController(activity , animated: true, completion: nil)
+        presentViewController(activity , animated: true, completion: nil)
         activity.completionWithItemsHandler = complitionHandler
         
     }
@@ -61,7 +61,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-        self.presentViewController(pickerController, animated: true, completion:nil)
+        presentViewController(pickerController, animated: true, completion:nil)
     }
     
     func imagePickerController(picker: UIImagePickerController,
@@ -72,12 +72,12 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
                 imagePicker.image = image
                 print("update")
             }
-            self.dismissViewControllerAnimated(true, completion: nil)
+            dismissViewControllerAnimated(true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController){
             print("imagePickerControllerDidCancel")
-            self.dismissViewControllerAnimated(true, completion: nil)
+            dismissViewControllerAnimated(true, completion: nil)
         
     }
     
@@ -98,12 +98,12 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.sourceType = UIImagePickerControllerSourceType.Camera
-        self.presentViewController(imagePicker, animated: true, completion: nil)
+        presentViewController(imagePicker, animated: true, completion: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.subscribeToKeyboardNotifications()
+        subscribeToKeyboardNotifications()
     }
     
     func subscribeToKeyboardNotifications() {
@@ -119,12 +119,12 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     func keyboardWillShow(notification: NSNotification) {
         
         if (bottomText.isFirstResponder()){
-            self.view.frame.origin.y -= getKeyboardHeight(notification)
+            view.frame.origin.y -= getKeyboardHeight(notification)
         }
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        view.frame.origin.y = 0
     }
     
     func getKeyboardHeight(notification: NSNotification) -> CGFloat {
@@ -136,18 +136,18 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     // Unsubscribe
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        self.unsubscribeFromKeyboardNotifications()
+        unsubscribeFromKeyboardNotifications()
     }
     
     func generateMemedImage() -> UIImage
     {
         //Hide extra UI
-        self.toolBar.hidden = true
-        self.navBar.hidden = true
+        toolBar.hidden = true
+        navBar.hidden = true
         
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
-        self.view.drawViewHierarchyInRect(self.view.frame,
+        view.drawViewHierarchyInRect(self.view.frame,
             afterScreenUpdates: true)
         
         let memedImage : UIImage =
@@ -155,8 +155,8 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         UIGraphicsEndImageContext()
         
         // Show hidden UI
-        self.toolBar.hidden = false
-        self.navBar.hidden = false
+        toolBar.hidden = false
+        navBar.hidden = false
         
         return memedImage
     }
@@ -164,7 +164,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     func save() {
         //Create the meme
         var gImage: UIImage
-        gImage = self.generateMemedImage()
+        gImage = generateMemedImage()
         
         let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originImage: imagePicker.image!, memeImage: gImage)
         
