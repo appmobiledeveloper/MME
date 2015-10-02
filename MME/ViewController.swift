@@ -11,6 +11,10 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var navBar: UINavigationBar!
     
+    @IBAction func onCancelButton(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
     @IBAction func onShareButton(sender: AnyObject) {
         
         let memeObject = generateMemedImage()
@@ -24,6 +28,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         if success {
             save()
         }
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     let memeTextAttributes = [
@@ -166,7 +171,13 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         var gImage: UIImage
         gImage = generateMemedImage()
         
-        let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originImage: imagePicker.image!, memeImage: gImage)
+        var oImage: UIImage
+        oImage = gImage
+        if imagePicker.image != nil {
+            oImage = imagePicker.image!
+        }
+        
+        let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originImage: oImage, memeImage: gImage)
         
         // Add it to the memes array in the Application Delegate
         (UIApplication.sharedApplication().delegate as!
