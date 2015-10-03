@@ -16,11 +16,11 @@ class SentMemeCollectionViewController: UIViewController, UICollectionViewDataSo
         
         let space: CGFloat = 3.0
         var numberOfItems: CGFloat! = 3.0
-        var sqrSize: CGFloat! = self.view.frame.size.width
+        var sqrSize: CGFloat! = view.frame.size.width
         
-        if self.view.frame.size.width > self.view.frame.size.height {
+        if view.frame.size.width > view.frame.size.height {
             numberOfItems = 5.0
-            sqrSize = self.view.frame.size.height
+            sqrSize = view.frame.size.height
         }
         let dimension = (sqrSize / 2 - (2 * space)) / numberOfItems
         
@@ -46,9 +46,9 @@ class SentMemeCollectionViewController: UIViewController, UICollectionViewDataSo
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         print("Cell \(indexPath.row) selected")
-        let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("DetailMemeViewController") as! DetailMemeViewController
-        detailController.meme = memes[indexPath.row]
-        self.navigationController!.pushViewController(detailController, animated: true)
+        let detailController = storyboard!.instantiateViewControllerWithIdentifier("DetailMemeViewController") as! DetailMemeViewController
+        detailController.memeIndex = indexPath.row
+        navigationController!.pushViewController(detailController, animated: true)
     }
     
     override func viewWillAppear(animated: Bool) {

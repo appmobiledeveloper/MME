@@ -1,8 +1,8 @@
 import UIKit
 
-class ViewController: UIViewController,UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class MemeEditorViewController: UIViewController,UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
-    @IBOutlet weak var albomButton: UIBarButtonItem!
+    @IBOutlet weak var albumButton: UIBarButtonItem!
     @IBOutlet weak var imagePicker: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topText: UITextField!
@@ -10,9 +10,16 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
     @IBOutlet weak var shareButton: UIBarButtonItem!
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var navBar: UINavigationBar!
+    var memeIndex: Int = -1
+    
+    var memes: [Meme]! {
+        let object = UIApplication.sharedApplication().delegate
+        let appDelegate = object as! AppDelegate
+        return appDelegate.memes
+    }
     
     @IBAction func onCancelButton(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func onShareButton(sender: AnyObject) {
@@ -24,11 +31,13 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         
     }
     func complitionHandler(activity: String?, success: Bool,items: [AnyObject]?, error: NSError?) {
-            print("complitionHandler result: " + String(success))
+        print("complitionHandler result: " + String(success))
         if success {
             save()
+            dismissViewControllerAnimated(true, completion: nil)
+            navigationController?.navigationBarHidden = false;
+            navigationController?.popViewControllerAnimated(true)
         }
-        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     let memeTextAttributes = [
@@ -43,8 +52,17 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
         
-        topText.text    = "TOP"
-        bottomText.text = "BOTTOM"
+        print("Inex: " + String(memeIndex))
+        
+        if memeIndex == -1 {
+            topText.text    = "TOP"
+            bottomText.text = "BOTTOM"
+        }else{
+            topText.text      = memes[memeIndex].topText
+            bottomText.text   = memes[memeIndex].bottomText
+            imagePicker.image = memes[memeIndex].originImage
+        }
+        
         topText.delegate = self
         bottomText.delegate = self
         
@@ -151,14 +169,32 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         navBar.hidden = true
         
         // Render view to an image
-        UIGraphicsBeginImageContext(self.view.frame.size)
-        view.drawViewHierarchyInRect(self.view.frame,
+        UIGraphicsBeginImageContext(view.frame.size)
+        view.drawViewHierarchyInRect(view.frame,
             afterScreenUpdates: true)
         
         let memedImage : UIImage =
         UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
+        //Secial case for empty image
+        //Saving just background
+        if imagePicker.image == nil {
+            topText.hidden = true
+            bottomText.hidden = true
+            
+            UIGraphicsBeginImageContext(view.frame.size)
+            view.drawViewHierarchyInRect(view.frame,
+                afterScreenUpdates: true)
+            
+            let oImage : UIImage =
+            UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            topText.hidden = false
+            bottomText.hidden = false
+            imagePicker.image = oImage
+        }
         // Show hidden UI
         toolBar.hidden = false
         navBar.hidden = false
@@ -171,18 +207,19 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate, UINaviga
         var gImage: UIImage
         gImage = generateMemedImage()
         
-        var oImage: UIImage
-        oImage = gImage
-        if imagePicker.image != nil {
-            oImage = imagePicker.image!
-        }
+        let oImage: UIImage = imagePicker.image!
         
         let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originImage: oImage, memeImage: gImage)
         
-        // Add it to the memes array in the Application Delegate
-        (UIApplication.sharedApplication().delegate as!
-            AppDelegate).memes.append(meme)
+        if memeIndex != -1 {
+            (UIApplication.sharedApplication().delegate as!
+                AppDelegate).memes.insert(meme, atIndex: memeIndex)
+            (UIApplication.sharedApplication().delegate as!
+                AppDelegate).memes.removeAtIndex(memeIndex + 1)
+        }else{
+            (UIApplication.sharedApplication().delegate as!
+                AppDelegate).memes.append(meme)
+        }
         print("memes: " + String((UIApplication.sharedApplication().delegate as!AppDelegate).memes))
-            
     }
 }
